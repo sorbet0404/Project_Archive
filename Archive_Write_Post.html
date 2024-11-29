@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Write Post</title>
+    <!-- CSS 파일 연결 -->
+    <link rel="stylesheet" href="CSS/Archive_styles.css">
+</head>
+<body class="write-post">
+    <div class="header">
+        <!-- 환영 메시지를 표시할 영역 -->
+        <div class="welcome" id="welcomeMessage"></div>
+        <!-- 돌아가기 버튼 -->
+        <button class="write-button" onclick="goToNoticeBoard()">돌아가기</button>
+        <!-- 로그아웃 버튼 -->
+        <button class="logout-button" onclick="logout()">로그아웃</button>
+    </div>
+    <div class="center-container">
+        <div class="write-container">
+            <h2>글쓰기</h2>
+            <!-- 글쓰기 폼 -->
+            <form id="writePostForm" action="/Archive_Project/Archive_Submit_Servlet" method="post" onsubmit="return validateForm()">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="grade">학년</label>
+                        <select id="grade" name="grade" required onchange="updateSubjects()">
+                            <option value="">학년 선택</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">과목</label>
+                        <select id="subject" name="subject" required>
+                            <option value="">과목 선택</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="recommendation">추천</label>
+                        <select id="recommendation" name="recommendation" required>
+                            <option value="">추천 선택</option>
+                            <option value="추천">추천</option>
+                            <option value="비추천">비추천</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="score">점수</label>
+                        <select id="score" name="score" required>
+                            <option value="">점수 선택</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="evaluation">내용</label>
+                    <textarea id="evaluation" name="evaluation" placeholder="내용" required></textarea>
+                </div>
+                <button type="submit">등록하기</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 로그인한 사용자의 이름과 학번을 세션 또는 로컬 스토리지에서 가져옴
+        const userName = sessionStorage.getItem('userName') || '사용자';
+        const userStudentId = sessionStorage.getItem('userStudentId');
+        const subjects = {
+            "2학년": ["선형대수학", "디지털 논리 회로 및 실험"],
+            "3학년": ["소프트웨어 분석", "데이터 통신"],
+            "4학년": ["인공지능", "빅데이터 분석 및 시각화"]
+        };
+
+        // 환영 메시지 설정
+        document.getElementById('welcomeMessage').innerText = `${userName}님 환영합니다!`;
+
+        // 학번에 따른 학년 옵션 설정
+        const gradeSelect = document.getElementById('grade');
+        if (userStudentId) {
+            const year = parseInt("20" + userStudentId.substring(0, 2), 10);
+            const currentYear = new Date().getFullYear();
+            const yearsInSchool = currentYear - year;
+
+            // 학년 옵션 추가
+            for (let i = 2; i <= Math.min(4, yearsInSchool + 1); i++) {
+                const option = document.createElement('option');
+                option.value = `${i}학년`;
+                option.text = `${i}학년`;
+                gradeSelect.appendChild(option);
+            }
+        }
+
+        // 선택된 학년에 따라 과목 선택 업데이트
+        function updateSubjects() {
+            const selectedGrade = document.getElementById('grade').value;
+            const subjectSelect = document.getElementById('subject');
+            subjectSelect.innerHTML = '<option value="">과목 선택</option>';
+            if (selectedGrade && subjects[selectedGrade]) {
+                subjects[selectedGrade].forEach(subject => {
+                    const option = document.createElement('option');
+                    option.value = subject;
+                    option.text = subject;
+                    subjectSelect.appendChild(option);
+                });
+            }
+        }
+
+        // 로그아웃 함수
+        function logout() {
+            alert('로그아웃 되었습니다.');
+            sessionStorage.clear(); // 모든 세션 스토리지 항목 제거
+            window.location.href = 'Archive_Login.html'; // 로그인 페이지로 리다이렉트
+        }
+
+        //게시판으로 이동하는 함수
+        function goToNoticeBoard() {
+            window.location.href = 'Archive_Notice_Board.html'; // 게시판 페이지로 리다이렉트
+        }
+
+        // 페이지가 로드되면 실행되는 함수
+        window.onload = function() {
+            // Hidden input for student ID
+            const studentIdInput = document.createElement('input');
+            studentIdInput.type = 'hidden';
+            studentIdInput.name = 'studentId';
+            studentIdInput.value = userStudentId;
+            document.getElementById('writePostForm').appendChild(studentIdInput);
+
+            // 각 셀렉트 박스의 총 너비를 계산하여 textarea의 너비 설정
+            const selects = document.querySelectorAll('select');
+            let totalWidth = 0;
+            selects.forEach(select => {
+                totalWidth += select.offsetWidth;
+            });
+            document.getElementById('evaluation').style.width = totalWidth + 'px';
+        }
+
+        // 폼 검증 및 콘솔 로그 추가
+        function validateForm() {
+            const formData = new FormData(document.getElementById('writePostForm'));
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}: ${value}`);
+            }
+            return true; // 폼 제출을 계속하기 위해 true 반환
+        }
+    </script>
+</body>
+</html>
+
+
