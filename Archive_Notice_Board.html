@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notice Board</title>
+    <!-- CSS 파일 연결 -->
+    <link rel="stylesheet" href="CSS/Archive_styles.css">
+</head>
+<body class="notice-board">
+    <div class="header">
+        <!-- 환영 메시지를 표시할 영역 -->
+        <div class="welcome" id="welcomeMessage"></div>
+        <!-- 글쓰기 버튼 -->
+        <button class="write-button" onclick="writePost()">글쓰기</button>
+        <!-- 로그아웃 버튼 -->
+        <button class="logout-button" onclick="logout()">로그아웃</button>
+    </div>
+    <div class="content">
+        <!-- 드롭다운 메뉴 추가 -->
+        <div class="semester-dropdown">
+            <select id="semester-select" onchange="updateSemester()">
+                <option value="24-1">24년 1학기</option>
+                <option value="24-2">24년 2학기</option>
+                <option value="25-1">25년 1학기</option>
+                <option value="25-2">25년 2학기</option>
+            </select>
+        </div>
+        <!-- 2학년 섹션 -->
+        <div class="toggle">
+            <button class="toggle-button">2학년</button> <!-- 2학년 토글 버튼 -->
+            <div class="toggle-content">
+                <div class="inner-toggle-wrapper">
+                    <button class="inner-toggle-button" data-subject="linear_table">선형대수학</button> <!-- 과목 토글 버튼 -->
+                    <div class="toggle-content" id="linear_table-content">
+                        <!-- 데이터베이스에서 가져온 내용이 여기에 추가됨. -->
+                    </div>
+                </div>
+                <div class="inner-toggle-wrapper">
+                    <button class="inner-toggle-button" data-subject="digital_table">디지털 논리 회로 및 실험</button> <!-- 과목 토글 버튼 -->
+                    <div class="toggle-content" id="digital_table-content">
+                        <!-- 데이터베이스에서 가져온 내용이 여기에 추가됨. -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 3학년 섹션 -->
+        <div class="toggle">
+            <button class="toggle-button">3학년</button> <!-- 3학년 토글 버튼 -->
+            <div class="toggle-content">
+                <div class="inner-toggle-wrapper">
+                    <button class="inner-toggle-button" data-subject="software_table">소프트웨어 분석</button> <!-- 과목 토글 버튼 -->
+                    <div class="toggle-content" id="software_table-content">
+                        <!-- 데이터베이스에서 가져온 내용이 여기에 추가됨. -->
+                    </div>
+                </div>
+                <div class="inner-toggle-wrapper">
+                    <button class="inner-toggle-button" data-subject="data_table">데이터 통신</button> <!-- 과목 토글 버튼 -->
+                    <div class="toggle-content" id="data_table-content">
+                        <!-- 데이터베이스에서 가져온 내용이 여기에 추가됨. -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 4학년 섹션 -->
+        <div class="toggle">
+            <button class="toggle-button">4학년</button> <!-- 4학년 토글 버튼 -->
+            <div class="toggle-content">
+                 <div class="inner-toggle-wrapper">
+                    <button class="inner-toggle-button" data-subject="ai_table">인공지능</button> <!-- 과목 토글 버튼 -->
+                    <div class="toggle-content" id="ai_table-content">
+                        <!-- 데이터베이스에서 가져온 내용이 여기에 추가됨. -->
+                    </div>
+                </div>
+                <div class="inner-toggle-wrapper">
+                    <button class="inner-toggle-button" data-subject="bigdata_table">빅데이터 분석 및 시각화</button> <!-- 과목 토글 버튼 -->
+                    <div class="toggle-content" id="bigdata_table-content">
+                        <!-- 데이터베이스에서 가져온 내용이 여기에 추가됨. -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 로그인한 사용자의 이름을 세션 또는 로컬 스토리지에서 가져옴
+        const userName = sessionStorage.getItem('userName') || '사용자';
+        const userStudentId = sessionStorage.getItem('userStudentId');
+
+        // 세션이 만료되었는지 확인함
+        if (!userStudentId) {
+            alert('세션이 만료되었습니다. 다시 로그인 해주세요.');
+            window.location.href = 'Archive_Login.html'; // 로그인 페이지로 리다이렉트
+        } else {
+            document.getElementById('welcomeMessage').innerText = `${userName}님 환영합니다!`; // 환영 메시지 설정함
+        }
+
+        // 로그아웃 함수
+        function logout() {
+            alert('로그아웃 되었습니다.');
+            sessionStorage.removeItem('userName'); // 사용자 정보 제거
+            sessionStorage.removeItem('userStudentId'); // 사용자 정보 제거
+            window.location.href = 'Archive_Login.html'; // 로그인 페이지로 리다이렉트
+        }
+
+        // 글쓰기 페이지로 이동하는 함수
+        function writePost() {
+            alert('허위, 중복, 저작권 침해, 성의없는 내용을 쓰거나 남을 비방하는 내용이 담길 경우 삭제될 수 있습니다.');
+            window.location.href = 'Archive_Write_Post.html'; // 글쓰기 페이지로 리다이렉트
+        }
+
+        // 토글 버튼 기능
+        document.querySelectorAll('.toggle-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const content = button.nextElementSibling;
+                content.style.display = content.style.display === 'block' ? 'none' : 'block'; // 토글 버튼 클릭 시 내용 표시/숨기기
+            });
+        });
+
+        // 과목 토글 버튼 기능
+        document.querySelectorAll('.inner-toggle-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const subject = button.getAttribute('data-subject');
+                const content = document.getElementById(subject + '-content');
+                if (content.style.display === 'block') {
+                    content.style.display = 'none'; // 내용 숨기기
+                } else {
+                    content.style.display = 'block'; // 내용 표시
+                    loadSubjectData(subject); // 데이터 로드
+                }
+            });
+        });
+
+        // 과목 데이터 로드 함수
+        function loadSubjectData(subject) {
+            fetch('/Archive_Project/Archive_Notice_Board_Servlet') // 서블릿에서 데이터 가져오기
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json(); // JSON 형태로 응답 받기
+                })
+                .then(data => {
+                    const subjectData = data.find(item => item.subject === subject);
+                    if (subjectData) {
+                        const content = document.getElementById(subject + '-content');
+                        let tableHTML = '<table><tr><th>추천/비추천</th><th>점수</th><th>강의평가</th></tr>';
+                        subjectData.evaluations.forEach(eval => {
+                            tableHTML += `<tr><td>${eval.recommendation}</td><td>${eval.score}</td><td>${eval.evaluation}</td></tr>`; // 데이터 테이블 생성
+                        });
+                        tableHTML += '</table>';
+                        content.innerHTML = tableHTML; // 테이블을 HTML에 삽입함
+                    }
+                })
+                .catch(error => console.error('Error loading data:', error)); // 오류 처리
+        }
+    </script>
+</body>
+</html>
+
